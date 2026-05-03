@@ -41,14 +41,14 @@
             transform: scale(1.05); /* Evita bordes blancos */
         }
 
-        /* 3. HEADER EFECTO CRISTAL (0.2) */
+       /* 3. HEADER EFECTO CRISTAL (ACTUALIZADO PARA IPAD) */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 30px;
+            padding: 20px 40px;
             
-            background-color: rgba(255, 255, 255, 0.2); /* Transparencia al 20% */
+            background-color: rgba(255, 255, 255, 0.2); 
             backdrop-filter: blur(15px); 
             -webkit-backdrop-filter: blur(15px);
             
@@ -60,38 +60,37 @@
             max-width: 1200px;
             position: relative;
             overflow: hidden;
-            min-height: 150px;
+            /* Quitamos min-height fijo para que respete el contenido */
+            gap: 20px; 
+            flex-wrap: wrap; /* Importante para que baje en pantallas chicas */
         }
 
-        /* 4. LOGO Y TEXTOS */
+        /* 4. LOGO Y TEXTOS (CORREGIDO) */
         .logo-superior {
-            width: 300px; 
+            width: 180px; /* Tamaño más controlado */
             height: auto;
             z-index: 10;
-            margin-left: -75px; /* Ajuste de margen para simetría */
+            flex-shrink: 0; /* Evita que el logo se achique */
         }
 
         .titulo-principal {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            /* Eliminamos la posición absoluta que causaba el choque */
+            flex: 1; /* Hace que el título ocupe el centro */
             text-align: center;
-            width: 100%;
-            pointer-events: none;
+            min-width: 300px; /* Evita que el texto se apriete mucho */
         }
 
         h1 { 
             font-family: 'fuentemadera', serif;
             color: var(--color-madera); 
             margin: 0; 
-            font-size: 60px;
+            font-size: clamp(35px, 5vw, 60px); /* Tamaño fluido: se achica solo si no cabe */
             letter-spacing: 5px; 
-            pointer-events: auto;
         }
 
         header p {
-            font-size: 30px;
-            color: #777;
+            font-size: clamp(16px, 2vw, 24px); /* Texto descriptivo más equilibrado */
+            color: #555; /* Un poco más oscuro para que se lea mejor sobre el fondo claro */
             margin: 5px 0 0 0;
             font-family: 'Tahoma', sans-serif;
         }
@@ -102,6 +101,7 @@
             flex-direction: column;
             gap: 10px;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .item-contacto {
@@ -189,11 +189,22 @@
         .lightbox.activo { display: flex; }
         .lightbox-img { max-width: 90%; max-height: 90%; }
 
-        @media (max-width: 850px) {
-            header { flex-direction: column; padding: 20px; text-align: center; }
-            .titulo-principal { position: static; transform: none; margin: 20px 0; }
-            .logo-superior { margin-left: 0; width: 180px; }
-            h1 { font-size: 35px; }
+        @media (max-width: 1024px) {
+            header { 
+                flex-direction: column; 
+                padding: 30px 20px; 
+                text-align: center; 
+            }
+            .contacto-header { 
+                align-items: center; 
+                text-align: center; 
+            }
+            .item-contacto { 
+                justify-content: center; 
+            }
+            .logo-superior {
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
