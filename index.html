@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refugio Lumi - Casitas de Pájaro</title>
+    <style>
+        /* 1. CARGA DE FUENTE */
+        @font-face {
+            font-family: 'fuentemadera';
+            src: url('fonts/WoodCabin.ttf');
+        }
+
+        :root {
+            --color-madera: #5d4037;
+            --color-fondo: #f4f1ea;
+            --rojo-vendido: #d32f2f;
+        }
+
+        /* 2. FONDO CON PATRÓN Y DESENFOQUE */
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Tahoma', sans-serif;
+            color: #333;
+            background-color: var(--color-fondo); 
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('img/patron.jpg'); 
+            background-repeat: repeat;
+            background-size: 300px;
+            filter: blur(4px); /* Desenfoque del fondo pajaritos */
+            transform: scale(1.05); /* Evita bordes blancos */
+        }
+
+        /* 3. HEADER EFECTO CRISTAL (0.2) */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            
+            background-color: rgba(255, 255, 255, 0.2); /* Transparencia al 20% */
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            
+            margin: 10px auto 50px auto; 
+            max-width: 1200px;
+            position: relative;
+            overflow: hidden;
+            min-height: 150px;
+        }
+
+        /* 4. LOGO Y TEXTOS */
+        .logo-superior {
+            width: 300px; 
+            height: auto;
+            z-index: 10;
+            margin-left: -75px; /* Ajuste de margen para simetría */
+        }
+
+        .titulo-principal {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        h1 { 
+            font-family: 'fuentemadera', serif;
+            color: var(--color-madera); 
+            margin: 0; 
+            font-size: 60px;
+            letter-spacing: 5px; 
+            pointer-events: auto;
+        }
+
+        header p {
+            font-size: 30px;
+            color: #777;
+            margin: 5px 0 0 0;
+            font-family: 'Tahoma', sans-serif;
+        }
+
+        .contacto-header {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .item-contacto {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .icono-redes {
+            width: 26px;
+            height: 26px;
+        }
+
+        /* 5. TARJETAS DE PRODUCTO (CRISTAL 0.2) */
+        .catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .producto {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .producto:hover { transform: translateY(-10px); }
+
+        .contenedor-img { width: 100%; height: 250px; cursor: pointer; }
+        .contenedor-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        .info { padding: 15px; text-align: center; }
+        h3 { font-size: 20px; color: var(--color-madera); margin: 10px 0; }
+        .precio { font-size: 1.5rem; font-weight: bold; color: var(--color-madera); }
+
+        /* VENDIDO */
+        .vendido-tag {
+            display: none;
+            position: absolute;
+            top: 10px; left: 10px;
+            background: var(--rojo-vendido);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            z-index: 5;
+        }
+        .producto.vendido .vendido-tag { display: block; }
+        .producto.vendido .contenedor-img img { filter: grayscale(1) opacity(0.6); }
+
+        /* WHATSAPP */
+        .boton-whatsapp {
+            display: block;
+            background: #25d366;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* ZOOM */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox.activo { display: flex; }
+        .lightbox-img { max-width: 90%; max-height: 90%; }
+
+        @media (max-width: 850px) {
+            header { flex-direction: column; padding: 20px; text-align: center; }
+            .titulo-principal { position: static; transform: none; margin: 20px 0; }
+            .logo-superior { margin-left: 0; width: 180px; }
+            h1 { font-size: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="img/casitas_logo.png" alt="Logo" class="logo-superior">
+    <div class="titulo-principal">
+        <h1>REFUGIO LUMI</h1>
+        <p>Productos de madera, casitas de pájaro artesanales y más...</p>
+    </div>
+    <div class="contacto-header">
+        <a href="https://wa.me/56931434127" target="_blank" class="item-contacto">
+            <span>+569 3143 4127</span>
+            <img src="img/logo_wsp.png" alt="WhatsApp" class="icono-redes">
+        </a>
+        <a href="https://instagram.com/refugio_lumi" target="_blank" class="item-contacto">
+            <span>@refugio_lumi</span>
+            <img src="img/logo_instagram.png" alt="Instagram" class="icono-redes">
+        </a>
+    </div>
+</header>
+
+<div class="catalogo">
+
+    <!-- Producto 1 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img">
+            <img src="img/casas/casa_1.png" alt="Casita Bosque Claro">
+        </div>
+        <div class="info">
+            <h3>Casita Bosque Claro</h3>
+            <p>Descripción breve...</p>
+            <span class="precio">$18.000</span>
+        </div>
+    </div>
+
+    <!-- Producto 2 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img">
+            <img src="img/casas/casa_2.png" alt="Casita Rústica Ambar">
+        </div>
+        <div class="info">
+            <h3>Casita Rústica Ambar</h3>
+            <p>Descripción breve...</p>
+            <span class="precio">$20.000</span>
+        </div>
+    </div>
+
+    <!-- Producto 3 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_3.png" alt="Casita Pastel"></div>
+        <div class="info"><h3>Casita Pastel</h3><p>Descripción breve...</p><span class="precio">$18.000</span></div>
+    </div>
+
+    <!-- Producto 4 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_4.png" alt="Casita Jardín Alto"></div>
+        <div class="info"><h3>Casita Jardín Alto</h3><p>Descripción breve...</p><span class="precio">$50.000</span></div>
+    </div>
+
+    <!-- Producto 5 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_5.png" alt="Casita Arcoíris"></div>
+        <div class="info"><h3>Casita Arcoíris</h3><p>Descripción breve...</p><span class="precio">$20.000</span></div>
+    </div>
+
+    <!-- Producto 6 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_6.png" alt="Casita Refugio Natural"></div>
+        <div class="info"><h3>Casita Refugio Natural</h3><p>Descripción breve...</p><span class="precio">$30.000</span></div>
+    </div>
+
+    <!-- Producto 7 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_7.jpg" alt="Casita Dúplex"></div>
+        <div class="info"><h3>Casita Dúplex</h3><p>Descripción breve...</p><span class="precio">$18.000</span></div>
+    </div>
+
+    <!-- Producto 8 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/Casa_8.jpeg" alt="Casita Floral"></div>
+        <div class="info"><h3>Casita Floral</h3><p>Descripción breve...</p><span class="precio">$18.000</span></div>
+    </div>
+
+    <!-- Producto 9 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/casa_9.HEIC" alt="Casita Colorada"></div>
+        <div class="info"><h3>Casita Colorada</h3><p>Descripción breve...</p><span class="precio">$18.000</span></div>
+    </div>
+
+    <!-- Producto 10 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/casas/Condominio.png" alt="Set Jardín"></div>
+        <div class="info"><h3>Set Jardín</h3><p>A PEDIDO!!</p><span class="precio">$120.000</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<header>
+    <div class="titulo-principal" style="position: static; transform: none;">
+        <h1>Otros Productos de Madera</h1>
+        <p>A PEDIDO!!!</p>
+    </div>
+</header>
+
+<div class="catalogo">
+
+    <!-- Producto 11 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img">
+            <img src="img/proximamente.png" alt="Jardinera Simple">
+        </div>
+        <div class="info">
+            <h3>Jardinera Simple</h3>
+            <p>A PEDIDO PRONTO!!</p>
+            <span class="precio">----</span>
+       <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 12 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img">
+            <img src="img/proximamente.png" alt="Jardinera de Banco">
+        </div>
+        <div class="info">
+            <h3>Jardinera de Banco</h3>
+            <p>A PEDIDO PRONTO!!</p>
+            <span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+     
+    <!-- Producto 13 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Carretilla Pequeña"></div>
+        <div class="info"><h3>Carretilla Pequeña</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 14 -->
+     <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Carretilla Mediana"></div>
+        <div class="info"><h3>Carretilla Mediana</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 15 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Banca Rústica Pequeña"></div>
+        <div class="info"><h3>Banca Rústica Pequeña</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 16 -->
+   <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Banca Rústica Mediana"></div>
+        <div class="info"><h3>Banca Rústica Mediana</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 17 -->
+    <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Mesa Rústica Pequeña"></div>
+        <div class="info"><h3>Mesa Rústica Pequeña</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+
+    <!-- Producto 18 -->
+   <div class="producto">
+        <div class="vendido-tag">VENDIDO</div>
+        <div class="contenedor-img"><img src="img/proximamente.png" alt="Mesa Rústica Mediana"></div>
+        <div class="info"><h3>Mesa Rústica Mediana</h3><p>A PEDIDO PRONTO!!</p><span class="precio">----</span>
+        <a href="https://wa.me/56931434127" target="_blank" class="boton-whatsapp">
+           Consultar por WhatsApp </a>
+        </div>
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('activo')">
+    <img class="lightbox-img" id="lightbox-img" src="">
+</div>
+
+<script>
+    document.querySelectorAll('.contenedor-img').forEach(img => {
+        img.addEventListener('click', () => {
+            document.getElementById('lightbox-img').src = img.querySelector('img').src;
+            document.getElementById('lightbox').classList.add('activo');
+        });
+    });
+</script>
+
+</body>
+</html>
